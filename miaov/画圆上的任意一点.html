@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+            background: black;
+        }
+        #canvas{
+            background: #fff;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script>
+        const cav = document.getElementById('canvas');
+        const ctx = cav.getContext('2d');
+        const W = cav.width;
+        const H = cav.height;
+        const C = {
+            // 获取鼠标在canvas的位置
+            getMouse:function(event){
+                let e = event || window.event;
+                // const {x,y} = this.getPost(e);
+                return this.getPost(e);
+            },
+            // 获取鼠标的位置
+            getPost:function(event){
+                let e = event || window.event;
+                let {offsetLeft,offsetTop } = e.target;
+                let {pageX,pageY } = e;
+                return {
+                    x:pageX - offsetLeft,
+                    y:pageY - offsetTop
+                }
+            },
+            // 生成随机颜色
+            randomColor:function(max=255,min=55){
+                return `rgba(${Math.floor(Math.random()*(max-min)+min)},
+                ${Math.floor(Math.random()*(max-min)+min)},
+                ${Math.floor(Math.random()*(max-min)+min)},
+                ${Math.floor(Math.random()*(max-min)+min)})`
+            },
+            // 生成随机数值
+            random:function(max,min){
+                return Math.floor(Math.random()*(max-min)+min)
+            }
+        }
+
+        // 圆类
+        class Circle {
+            constructor(obj){
+                this.x = 0;
+                this.y = 0;
+                this.r = 50;
+                this.fillStyle = "#ff503f";
+                Object.assign(this,obj)
+            }
+            render(ctx,x2,y2){
+                const { x,y,r,fillStyle} = this;
+                ctx.save();
+                ctx.translate(x2,y2)
+                ctx.beginPath();
+                ctx.arc(x,y,r,0,2*Math.PI);
+                ctx.fillStyle = fillStyle;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        //坐标类
+        class Coordinate{
+            constructor(obj){
+                this.x = 0;     //中心点坐标
+                this.y = 0;
+                this.strokeStyle = "#ff503f";
+                Object.assign(this,obj)
+            }
+            render(ctx){
+                const {x,y,strokeStyle} = this;                
+                ctx.beginPath();    
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = strokeStyle;    
+                ctx.moveTo(0,y);
+                ctx.lineTo(W,y);
+                ctx.moveTo(x,0);
+                ctx.lineTo(x,H);
+                ctx.closePath();
+                ctx.stroke();
+
+            }
+        }
+
+        // 文本类
+        class Text{
+            constructor(obj){
+                this.x = 0;
+                this.y = 0;
+                this.fillStyle = '#ff503f';
+                Object.assign(this,obj);
+            }
+            render(ctx){
+                const { x,y,fillStyle } = this;
+                ctx.font = '15px miaov';
+                ctx.fillStyle=fillStyle;
+                ctx.fillText("点击画布有彩蛋",x,y);
+            }
+        }
+
+        // 画坐标        
+        var coordinate = new Coordinate({
+            x:W/2,
+            y:H/2
+        })        
+        coordinate.render(ctx);
+
+        // 画中心圆
+        var circle = new Circle({
+            x:0,
+            y:0,
+            fillStyle:C.randomColor(),
+            r:100
+        })
+        circle.render(ctx,W/2,H/2);
+
+        // 画边线圆
+        var random = C.random(360,0)
+        var limitCircle = new Circle({
+            x:Math.cos(random*Math.PI/180)* circle.r,
+            y:Math.sin(random*Math.PI/180)* circle.r,
+            r:20
+        })
+
+        limitCircle.render(ctx,W/2,H/2);
+
+        // 写入文字
+        var text = new Text({
+            x:10,
+            y:30,
+            fillStyle:C.randomColor()
+        })
+        text.render(ctx);
+
+
+        cav.onclick=function(event){
+            let e = event || window.event;            
+            ctx.clearRect(0,0,W,H);
+            draw(e);
+        }
+        //绘画
+        function draw(e){
+            let { x,y } =  C.getMouse(e);
+            coordinate.x = x;
+            coordinate.y = y;
+            coordinate.strokeStyle = C.randomColor(255,0);
+            coordinate.render(ctx);
+
+
+            circle.fillStyle = C.randomColor();
+            circle.render(ctx,x,y);
+            
+            var random = C.random(360,0);
+            limitCircle.x = Math.cos(random*Math.PI/180)* circle.r,
+            limitCircle.y = Math.sin(random*Math.PI/180)* circle.r,
+            limitCircle.fillStyle = C.randomColor(255,0);
+            limitCircle.render(ctx,x,y);
+
+            text.fillStyle = C.randomColor();
+            text.render(ctx);
+        }
+
+    </script>
+</body>
+</html>

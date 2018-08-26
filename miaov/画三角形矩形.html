@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+            background: black;
+        }
+        #canvas{
+            background: #fff;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script>
+        const cav = document.getElementById('canvas');
+        const ctx = cav.getContext('2d');
+        const W = cav.width;
+        const H = cav.height;
+        
+
+        const C = {
+            // 生成随机颜色
+            randomColor:function(max=255,min=100){
+                return `rgba(${Math.floor(Math.random()*(max-min)+min)},
+                ${Math.floor(Math.random()*(max-min)+min)},
+                ${Math.floor(Math.random()*(max-min)+min)},
+                ${Math.floor(Math.random()*(max-min)+min)})`
+            }
+        }
+
+        // 三角形
+        class Triangle{
+            constructor(obj){
+                this.P0 = {
+                    x:0,
+                    y:0
+                }
+                this.P1 = {
+                    x:10,
+                    y:10
+                }
+                this.P2 = {
+                    x:20,
+                    y:20
+                }
+                this.Style = '#ff503f';
+                Object.assign(this,obj)
+            }
+            render(ctx){
+                const {P0,P1,P2,Style} = this;
+                ctx.beginPath();
+                ctx.strokeStyle = Style;
+                ctx.moveTo(P0.x,P0.y);
+                ctx.lineTo(P1.x,P1.y);
+                ctx.lineTo(P2.x,P2.y);
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
+        class Rectangle{
+            constructor(obj){
+                this.P0 = {
+                    x:0,
+                    y:0
+                }
+                this.P1 = {
+                    x:100,
+                    y:100
+                }
+                this.fillStyle = "#ff503f";
+                Object.assign(this,obj)
+            }
+            render(ctx){
+                const { P0,P1,fillStyle } = this;
+                ctx.beginPath();
+                ctx.fillStyle = fillStyle
+                ctx.fillRect(P0.x,P0.y,P1.x,P1.y);
+                ctx.fill();
+            }
+        }
+
+        var triangle = new Triangle({
+            P0:{
+                x:100,
+                y:100
+            },
+            P1:{
+                x:200,
+                y:100
+            },
+            P2:{
+                x:150,
+                y:200
+            },
+            Style:C.randomColor()
+        }).render(ctx);
+
+        var rectangle = new Rectangle({
+            P0:{
+                x:200,
+                y:200
+            },
+            P1:{
+                x:250,
+                y:250
+            },
+            fillStyle:C.randomColor()
+        }).render(ctx);
+
+    </script>
+</body>
+</html>
